@@ -1,0 +1,80 @@
+name: Autograding Tests
+
+on:
+  push:
+  repository_dispatch:
+
+permissions:
+  checks: write
+  actions: read
+  contents: read
+
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: test_convert_to_hsv
+        id: test-convert-to-hsv
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: test_convert_to_hsv
+          setup-command: pip install pytest opencv-python
+          command: python -m pytest tests/test_main.py::test_convert_to_hsv
+          timeout: 10
+          max-score: 2
+
+      - name: test_convert_to_lab
+        id: test-convert-to-lab
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: test_convert_to_lab
+          setup-command: pip install pytest opencv-python
+          command: python -m pytest tests/test_main.py::test_convert_to_lab
+          timeout: 10
+          max-score: 2
+
+      - name: test_calculate_channel_mean
+        id: test-calculate-channel-mean
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: test_calculate_channel_mean
+          setup-command: pip install pytest opencv-python
+          command: python -m pytest tests/test_main.py::test_calculate_channel_mean
+          timeout: 10
+          max-score: 2
+
+      - name: test_create_color_mask
+        id: test-create-color-mask
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: test_create_color_mask
+          setup-command: pip install pytest opencv-python
+          command: python -m pytest tests/test_main.py::test_create_color_mask
+          timeout: 10
+          max-score: 2
+
+      - name: test_count_mask_pixels
+        id: test-count-mask-pixels
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: test_count_mask_pixels
+          setup-command: pip install pytest opencv-python
+          command: python -m pytest tests/test_main.py::test_count_mask_pixels
+          timeout: 10
+          max-score: 2
+
+      - name: Autograding Reporter
+        uses: classroom-resources/autograding-grading-reporter@v1
+        env:
+          TEST-CONVERT-TO-HSV_RESULTS: "${{ steps.test-convert-to-hsv.outputs.result }}"
+          TEST-CONVERT-TO-LAB_RESULTS: "${{ steps.test-convert-to-lab.outputs.result }}"
+          TEST-CALCULATE-CHANNEL-MEAN_RESULTS: "${{ steps.test-calculate-channel-mean.outputs.result }}"
+          TEST-CREATE-COLOR-MASK_RESULTS: "${{ steps.test-create-color-mask.outputs.result }}"
+          TEST-COUNT-MASK-PIXELS_RESULTS: "${{ steps.test-count-mask-pixels.outputs.result }}"
+        with:
+          runners: test-convert-to-hsv,test-convert-to-lab,test-calculate-channel-mean,test-create-color-mask,test-count-mask-pixels
